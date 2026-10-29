@@ -1,6 +1,6 @@
 import {t,region,applyTranslations} from './i18n.mjs';
 import {parseSearchQuery,matchesPage,matchesText} from './search.mjs';
-import {safeMapReturn,googleMapHref} from './photo-links.mjs';
+import {safeMapReturn,googleMapHref,galleryHref} from './photo-links.mjs';
 (() => {
 "use strict";
 const data=window.REONA_DATA;
@@ -18,7 +18,7 @@ try {
   saved = new Set(current ? JSON.parse(current).filter(v=>typeof v==="string") :
     JSON.parse(localStorage.getItem("pilgrim-amami-favorites-r01") || "[]").map(id=>"pilgrim:"+id));
 } catch {}
-let active=works[0], query="", savedOnly=false, currentId=null, trigger=null, detailOrder=[], toastTimer, homeMode=true;
+let active=works[0], query="", savedOnly=false, currentId=null, trigger=null, detailOrder=[], toastTimer, homeMode=true, detailMapReturn=null;
 // Preserve saved IDs from the earlier category routes.
 saved=new Set([...saved].map(value=>value.replace(/^(mv|video):/,"")));
 const items=()=>[...(groups.get(active.id) || [])].sort((a,b)=>{
@@ -50,14 +50,14 @@ const citation=p=>{
   return t("索引待补充");
 };
 // Card labels remain short; page-numbering provenance stays in the dataset.
-const label=p=>active.title+(p.reference.type==="page" ? " p."+pageRange(pages(p)) : " "+citation(p));
+const label=p=>active.title+(p.reference.type==="page" ? " p."+pageRange(pages(p)) : p.reference.type==="unresolved" ? "" : " "+citation(p));
 const key=p=>active.id+":"+p.id;
 const displayPhoto=p=>p.photoIds.map(id=>photos.get(id)).find(photo=>photo?.permission==="website-approved" && (photo.src || photo.thumbnail));
 const cardImage=(p,index=0)=>{
   const reference=window.ReoNaReference.find(active.id,p.id);
   if(reference)return window.ReoNaReference.markup(reference,label(p),true,{priority:index<3});
   const photo=displayPhoto(p), src=photo?.thumbnail || photo?.src;
-  return src ? '<img src="'+escapeHTML(src)+'" alt="'+escapeHTML(label(p))+'" width="640" height="500" loading="lazy">' : '';
+  return src ? '<img src="'+escapeHTML(src)+'" alt="'+escapeHTML(label(p))+'" width="640" height="500" loading="lazy">' : '<span class="image-placeholder">'+escapeHTML(t('图片待补充'))+'</span>';
 };
 const filtered = () => {
  const request=parseSearchQuery(query);
@@ -98,7 +98,7 @@ function renderGallery() {
   $("#empty-state").hidden=visible.length!==0;
   $("#empty-message").textContent=!(groups.get(active.id) || []).length ? t("暂无条目") : savedOnly && !query ? t("暂无收藏") : t("无结果");
   $("#reset-filter").hidden=!(groups.get(active.id) || []).length || (!query && !savedOnly);
-  $("#result-status").textContent=t("{count} 张",{count:visible.length});
+  $("#result-status").textContent=t("{count} 条目",{count:visible.length});
   syncSaved();
 }
 const sourceMenu=$("#source-menu"), sourceToggle=$("#source-toggle"), dropdown=$("#source-dropdown");
@@ -148,7 +148,7 @@ function renderHome(){
  $("#home-feed").innerHTML=populated.map(w=>{
   const entries=groups.get(w.id),linked=new Set(entries.flatMap(e=>e.locations.map(l=>l.placeId)));
   const pictures=entries.slice(0,3).map((entry,index)=>{const ref=window.ReoNaReference.find(w.id,entry.id);if(!ref)return '';const text=w.title+(entry.reference.type==='page'?' p.'+pageRange(entry.reference.pages):'');return window.ReoNaReference.markup(ref,text,true,{priority:index===0});}).join('');
-  return '<article class="home-post"><div class="home-post-meta">'+escapeHTML(t(kind[w.kind]))+(w.region?' · '+escapeHTML(region(w.region)):'')+'</div><h3><a href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(w.title)+'</a></h3><p class="home-post-count">'+escapeHTML(t('{count} 张',{count:entries.length}))+' · '+escapeHTML(t('{count} 处',{count:linked.size}))+'</p><a class="home-preview" href="#source/'+encodeURIComponent(w.id)+'" aria-label="'+escapeHTML(t('查看 {label}',{label:w.title}))+'">'+pictures+'</a><div class="home-post-links"><a class="text-link" href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(t('查看全部'))+' →</a><a class="text-link" href="map.html?source='+encodeURIComponent(w.id)+'">'+escapeHTML(t('在地图中查看 ↗'))+'</a></div></article>';
+  return '<article class="home-post"><div class="home-post-meta">'+escapeHTML(t(kind[w.kind]))+(w.region?' · '+escapeHTML(region(w.region)):'')+'</div><h3><a href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(w.title)+'</a></h3><p class="home-post-count">'+escapeHTML(t('{count} 条目',{count:entries.length}))+' · '+escapeHTML(t('{count} 处',{count:linked.size}))+'</p><a class="home-preview"'+(pictures?'':' hidden')+' href="#source/'+encodeURIComponent(w.id)+'" aria-label="'+escapeHTML(t('查看 {label}',{label:w.title}))+'">'+pictures+'</a><div class="home-post-links"><a class="text-link" href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(t('查看全部'))+' →</a><a class="text-link" href="map.html?source='+encodeURIComponent(w.id)+'">'+escapeHTML(t('在地图中查看 ↗'))+'</a></div></article>';
  }).join('');
  $("#home-map-summary").textContent=t('{count} 处',{count:data.places.filter(p=>p.position).length});
  $("#home-sources").innerHTML=works.map(w=>'<a href="#source/'+encodeURIComponent(w.id)+'"><span>'+escapeHTML(w.title)+'</span><small>'+escapeHTML(t(kind[w.kind]))+'</small></a>').join('');
@@ -201,10 +201,12 @@ document.addEventListener("click",event=>{if(!sourceMenu.contains(event.target))
 function showDetail(id, opener) {
   const p=(groups.get(active.id) || []).find(p=>p.id===id); if (!p) return;
   currentId=id;
-  const requestedReturn=safeMapReturn(new URLSearchParams(location.search).get("return"),location.href);
-  const fallback=p.locations.length ? "map.html?place="+encodeURIComponent(p.locations[0].placeId) : null;
-  $("#detail-back").hidden=!(requestedReturn||fallback);
-  $("#detail-back").href=requestedReturn||fallback||"map.html";
+  if(opener)detailMapReturn=null;
+  $("#detail-back").hidden=false;
+  $("#detail-back").href=galleryHref(active.id,location.href);
+  const closeLabel=detailMapReturn?'返回地图':'关闭';
+  $("#close-detail").setAttribute('data-i18n-aria-label',closeLabel);
+  $("#close-detail").setAttribute('aria-label',t(closeLabel));
   if (opener) { trigger=opener; detailOrder=filtered().map(p=>p.id); }
   $("#detail-title").textContent=label(p);
   const reference=window.ReoNaReference.find(active.id,p.id);
@@ -215,6 +217,7 @@ function showDetail(id, opener) {
   detailImage.hidden=!src || Boolean(reference);
   if (src) detailImage.src=src; else detailImage.removeAttribute("src");
   detailImage.alt=label(p);
+  $('#detail-placeholder').hidden=Boolean(reference||src);
   renderDetails(p);
   const position=detailOrder.indexOf(id);
   $("#previous-photo").disabled=position<=0;
@@ -228,16 +231,30 @@ function stepDetail(delta) {
   const index=detailOrder.indexOf(currentId), next=detailOrder[index+delta];
   if (next) showDetail(next);
 }
+function returnToGallery(){
+  detailMapReturn=null;
+  history.replaceState(null,'',galleryHref(active.id,location.href));
+  $("#photo-dialog").close();
+}
+function dismissDetail(){
+  if(detailMapReturn){location.assign(detailMapReturn);return;}
+  returnToGallery();
+}
+$("#detail-back").addEventListener('click',event=>{
+  if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||event.button!==0)return;
+  event.preventDefault();returnToGallery();
+});
+$("#photo-dialog").addEventListener('cancel',event=>{event.preventDefault();dismissDetail();});
 $("#photo-dialog").addEventListener("close",()=>{
-  document.body.classList.remove("modal-open"); currentId=null;
+  document.body.classList.remove("modal-open"); currentId=null;detailMapReturn=null;
   if (trigger && document.contains(trigger)) trigger.focus({preventScroll:true});
 });
 $("#photo-dialog").addEventListener("click",event=>{
   if (event.target!==$("#photo-dialog")) return;
   const r=event.target.getBoundingClientRect();
-  if (event.clientX<r.left || event.clientX>r.right || event.clientY<r.top || event.clientY>r.bottom) $("#photo-dialog").close();
+  if (event.clientX<r.left || event.clientX>r.right || event.clientY<r.top || event.clientY>r.bottom) dismissDetail();
 });
-$("#close-detail").addEventListener("click",()=>$("#photo-dialog").close());
+$("#close-detail").addEventListener("click",dismissDetail);
 $("#detail-save").addEventListener("click",()=>{if(currentId) toggleSaved(currentId);});
 $("#previous-photo").addEventListener("click",()=>stepDetail(-1));
 $("#next-photo").addEventListener("click",()=>stepDetail(1));
@@ -263,5 +280,5 @@ window.addEventListener('reona-language-change',()=>{
 });
 renderModule();
 const requestedEntry=new URLSearchParams(location.search).get("entry");
-if(requestedEntry){detailOrder=items().map(p=>p.id);showDetail(requestedEntry);}
+if(requestedEntry){detailMapReturn=safeMapReturn(new URLSearchParams(location.search).get("return"),location.href);detailOrder=items().map(p=>p.id);showDetail(requestedEntry);}
 })();

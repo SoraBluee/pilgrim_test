@@ -2,7 +2,7 @@ import {translate,normalizeLanguage} from './translations.mjs';
 const storage='reona-pilgrimage-language-v1';
 let language='zh';try{language=normalizeLanguage(localStorage.getItem(storage));}catch{}
 export const t=(key,values)=>translate(key,language,values);
-export const region=value=>value==='奄美'?t('奄美'):value;
+export const region=value=>value?t(value):value;
 export const currentLanguage=()=>language;
 export function applyTranslations(root=document){
  document.documentElement.lang={zh:'zh-CN',en:'en',ja:'ja'}[language];

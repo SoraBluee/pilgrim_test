@@ -94,7 +94,30 @@ export const messages = {
     "地点可用，底图加载中…": "Places ready · Loading basemap…",
     "底图加载较慢，地点仍可查看": "Basemap is slow · Places are available",
     "底图暂未加载，地点仍可查看": "Basemap unavailable · Places are available",
-    "地图无法加载": "Unable to load the map"
+    "地图无法加载": "Unable to load the map",
+    "← 返回图集": "← Back to gallery",
+    "返回地图": "Back to map",
+    "图片待补充": "Image pending",
+    "出处待补充": "Source pending",
+    "{count} 条目": [
+      "{count} entry",
+      "{count} entries"
+    ],
+    "东京": "Tokyo",
+    "千叶": "Chiba",
+    "铫子": "Choshi",
+    "足利": "Ashikaga",
+    "磐城": "Iwaki",
+    "横滨": "Yokohama",
+    "福岛": "Fukushima",
+    "市原": "Ichihara",
+    "那霸": "Naha",
+    "八街": "Yachimata",
+    "札幌": "Sapporo",
+    "东伊豆": "Higashiizu",
+    "大阪": "Osaka",
+    "海德堡": "Heidelberg",
+    "伦敦": "London"
   },
   "ja": {
     "首页": "ホーム",
@@ -182,7 +205,27 @@ export const messages = {
     "地点可用，底图加载中…": "地点は選択できます · 背景地図を読み込み中…",
     "底图加载较慢，地点仍可查看": "背景地図の読み込みに時間がかかっています · 地点は表示できます",
     "底图暂未加载，地点仍可查看": "背景地図を読み込めません · 地点は表示できます",
-    "地图无法加载": "地図を読み込めません"
+    "地图无法加载": "地図を読み込めません",
+    "← 返回图集": "← 画像一覧に戻る",
+    "返回地图": "地図に戻る",
+    "图片待补充": "画像準備中",
+    "出处待补充": "出典確認中",
+    "{count} 条目": "{count} 件",
+    "东京": "東京",
+    "千叶": "千葉",
+    "铫子": "銚子",
+    "足利": "足利",
+    "磐城": "いわき",
+    "横滨": "横浜",
+    "福岛": "福島",
+    "市原": "市原",
+    "那霸": "那覇",
+    "八街": "八街",
+    "札幌": "札幌",
+    "东伊豆": "東伊豆",
+    "大阪": "大阪",
+    "海德堡": "ハイデルベルク",
+    "伦敦": "ロンドン"
   }
 };
 export const languages=['zh','en','ja'];

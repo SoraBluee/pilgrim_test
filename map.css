@@ -30,3 +30,9 @@
 .map-loading-point{width:18px;height:18px;padding:0;border-radius:50%;border:2px solid white;background:#98665a;box-shadow:0 1px 4px #301c1a42;cursor:pointer;z-index:1}.paw-map-marker{z-index:2}.map-feedback{max-width:calc(100% - 78px);line-height:1.6;pointer-events:none}.map-toolbar select{max-width:190px}
 
 @media(max-width:600px){.map-page .masthead{height:202px;padding-top:30px}}
+
+.place-photo-image .image-placeholder{min-height:0;padding:12px;font-size:16px}.paw-photo-heading{gap:12px;align-items:baseline}.paw-photo-heading>span:first-child{min-width:0;overflow-wrap:anywhere}.paw-photo-heading>span:last-child{flex-shrink:0;font-size:14px}.map-result small{white-space:normal;text-align:right;flex-shrink:0;max-width:45%}.map-result .search-reference{max-width:50%;overflow-wrap:anywhere}.place-photo>span:not(.place-photo-image){overflow-wrap:anywhere}.map-toolbar .map-source-filter select{width:min(280px,100%)}
+@media(max-width:760px){.map-source-filter{max-width:calc(100vw - 80px)}.map-toolbar .map-source-filter select{max-width:100%}.paw-photo-grid .place-photo{min-width:0}}
+
+.paw-photo-grid .place-photo-image:has(.image-placeholder){height:120px;aspect-ratio:auto}.paw-photo-grid .place-photo:has(.image-placeholder){align-content:start}.paw-photo-grid .image-placeholder{font-size:16px}
+@media(max-width:760px){.paw-photo-grid .place-photo-image:has(.image-placeholder){height:90px}}

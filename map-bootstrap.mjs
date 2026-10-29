@@ -4,7 +4,7 @@ export function initialMapView(rows,params=new URLSearchParams()){
  if(validCenter)return {center:[c[1],c[0]],zoom:params.has('z')&&Number.isFinite(z)?Math.max(1,Math.min(18,z)):10};
  const selected=rows.find(row=>row.place.id===params.get('place'));
  if(selected)return {center:[selected.place.position.lng,selected.place.position.lat],zoom:params.has('z')&&Number.isFinite(z)?Math.max(1,Math.min(18,z)):14};
- const positions=rows.filter(row=>row.associations.length||row.candidate).map(row=>row.place.position).filter(p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng));
+ const positions=rows.map(row=>row.place.position).filter(p=>p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng));
  if(!positions.length)return {center:[129.52,28.39],zoom:10};
  if(positions.length===1)return {center:[positions[0].lng,positions[0].lat],zoom:13};
  return {bounds:[[Math.min(...positions.map(p=>p.lng)),Math.min(...positions.map(p=>p.lat))],[Math.max(...positions.map(p=>p.lng)),Math.max(...positions.map(p=>p.lat))]],fitBoundsOptions:{padding:45,maxZoom:13,duration:0}};

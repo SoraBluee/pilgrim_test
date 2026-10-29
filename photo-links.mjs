@@ -17,3 +17,9 @@ export function photoHref(workId,entryId,returnUrl,base){
  if(back)query.set('return',back);
  return 'index.html?'+query+'#source/'+encodeURIComponent(workId);
 }
+
+// Exiting to a gallery must clear the photo deep-link and its map-return context.
+export function galleryHref(workId,base){
+ const url=new URL('index.html',base);url.hash='source/'+encodeURIComponent(workId);
+ return url.pathname+url.hash;
+}

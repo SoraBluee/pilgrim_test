@@ -2,7 +2,7 @@ import {t,currentLanguage,applyTranslations} from './i18n.mjs';
 import {initialMapView,lightMapStyle,labelField} from './map-bootstrap.mjs';
 import {photoHref} from './photo-links.mjs';
 import {pawMarkerElement} from './paw-marker.mjs';
-import {placeIndex,filterPlaces,pointsGeoJSON,citation,positionLabel} from './map-data.mjs';
+import {placeIndex,filterPlaces,pointsGeoJSON,citation,positionLabel,regionOptions} from './map-data.mjs';
 const data=window.REONA_DATA,$=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const params=new URLSearchParams(location.search);
 let source=data.works.some(w=>w.id===params.get('source'))?params.get('source'):'all',selectedId=params.get('place'),map=null,marker=null,popup=null,visible=[],library=null,loading=false,loadTimer,pointsReady=false,pendingMarkers=[],feedbackKey="";
@@ -10,11 +10,17 @@ const publicRows=placeIndex(data),publicIds=new Set(publicRows.map(r=>r.place.id
 const candidates=(window.REONA_LOCAL?.candidates||[]).filter(p=>!publicIds.has(p.id)).map(p=>({place:p,associations:[],candidate:true}));
 $('#candidate-control').hidden=!candidates.length;
 $('#map-search').value=params.get('q')||'';
-$('#map-region').value=['all','amami'].includes(params.get('region'))?params.get('region'):'amami';
+const availableRegions=regionOptions(publicRows);
+function regionNavigation(selected=$('#map-region').value){
+ $('#map-region').innerHTML=[{id:'all',label:'全部地区'},...availableRegions].map(r=>'<option value="'+esc(r.id)+'">'+esc(t(r.label))+'</option>').join('');
+ $('#map-region').value=availableRegions.some(r=>r.id===selected)?selected:'all';
+}
+regionNavigation(params.get('region'));
 let hoverOpened=false;
 const name=row=>row.place.name||positionLabel(row.place.position);
 function menu(open){if(open)window.ReoNaSourceMenu.fit();$('#source-toggle').setAttribute('aria-expanded',String(open));$('#source-dropdown').hidden=!open;if(!open)hoverOpened=false;}
 function navigation(){
+ regionNavigation();
  $('#source-options').innerHTML=window.ReoNaSourceMenu.links(data.works,null,'index.html#source/');
  document.querySelector('.footer-gallery').href='index.html#source/'+encodeURIComponent(source==='all'?'pilgrim':source);
  $('#map-source').innerHTML=[{id:'all',title:t('全部出处')},...data.works].map(w=>'<option value="'+esc(w.id)+'"'+(source===w.id?' selected':'')+'>'+esc(w.title)+'</option>').join('');
@@ -27,21 +33,23 @@ function remember(){
  history.replaceState(null,'',url);
  document.querySelectorAll('[data-photo-entry]').forEach(a=>{a.href=photoHref(a.dataset.photoWork,a.dataset.photoEntry,url.href,location.href);});
 }
+const imageSummary=row=>{const count=row.associations.filter(a=>a.hasImage).length;return count?t('{count} 张',{count}):'';};
+const placeholder=()=>'<span class="image-placeholder">'+esc(t('图片待补充'))+'</span>';
 function photographLinks(row){
  return row.associations.map(a=>{
  const ref=window.ReoNaReference.find(a.work.id,a.entry.id),photo=a.entry.photoIds.map(id=>data.photos.find(p=>p.id===id)).find(Boolean),label=citation(a.work,a.entry);
  const image=ref?window.ReoNaReference.markup(ref,label,true):photo?'<img src="'+esc(photo.thumbnail||photo.src)+'" alt="'+esc(label)+'" loading="lazy">':'';
- return '<a class="place-photo" data-photo-work="'+esc(a.work.id)+'" data-photo-entry="'+esc(a.entry.id)+'" href="'+esc(photoHref(a.work.id,a.entry.id,location.href,location.href))+'">'+(image?'<span class="place-photo-image">'+image+'</span>':'')+'<span>'+esc(label)+'</span>'+(a.matchStatus==='confirmed'?'':'<small>'+(a.matchStatus==='probable'?t('推定'):t('待核实'))+'</small>')+'</a>';
+ return '<a class="place-photo" data-photo-work="'+esc(a.work.id)+'" data-photo-entry="'+esc(a.entry.id)+'" href="'+esc(photoHref(a.work.id,a.entry.id,location.href,location.href))+'">'+'<span class="place-photo-image">'+(image||placeholder())+'</span>'+'<span>'+esc(label)+'</span>'+(a.matchStatus==='confirmed'?'':'<small>'+(a.matchStatus==='probable'?t('推定'):t('待核实'))+'</small>')+'</a>';
  }).join('');
 }
 function details(row){
  $('#map-recenter').hidden=!row;if(!row){$('#place-detail').innerHTML='<p class="map-empty">'+esc(t('选择地点'))+'</p>';return;}
- $('#place-detail').innerHTML='<div class="place-title"><h3>'+esc(name(row))+'</h3><span>'+ (row.candidate?t('待匹配'):t('{count} 张',{count:row.associations.length}))+'</span></div>'+(row.place.name?'<p class="place-coordinate">'+positionLabel(row.place.position)+'</p>':'')+'<div class="place-photos">'+(row.associations.length?photographLinks(row):'<p class="map-empty">'+esc(t('尚未匹配照片'))+'</p>')+'</div>';
+ $('#place-detail').innerHTML='<div class="place-title"><h3>'+esc(name(row))+'</h3><span>'+ (row.candidate?t('待匹配'):imageSummary(row))+'</span></div>'+(row.place.name?'<p class="place-coordinate">'+positionLabel(row.place.position)+'</p>':'')+'<div class="place-photos">'+(row.associations.length?photographLinks(row):'<div class="place-photo-image">'+placeholder()+'</div><p class="map-empty">'+esc(t('出处待补充'))+'</p>')+'</div>';
 }
 function openPhotographs(row){
- popup?.remove();if(!map||!row.associations.length)return;
+ popup?.remove();if(!map)return;
  const content=document.createElement('div');content.className='paw-photo-content';
- content.innerHTML='<div class="paw-photo-heading">'+(row.place.name?'<span>'+esc(row.place.name)+'</span>':'')+'<span>'+esc(t('{count} 张',{count:row.associations.length}))+'</span></div><div class="paw-photo-grid">'+photographLinks(row)+'</div>';
+ content.innerHTML='<div class="paw-photo-heading">'+(row.place.name?'<span>'+esc(row.place.name)+'</span>':'')+'<span>'+esc(imageSummary(row))+'</span></div><div class="paw-photo-grid">'+(row.associations.length?photographLinks(row):'<div class="place-photo"><span class="place-photo-image">'+placeholder()+'</span><small>'+esc(t('出处待补充'))+'</small></div>')+'</div>';
  content.addEventListener('wheel',e=>e.stopPropagation(),{passive:true});
  content.style.setProperty('--popup-grid-space',Math.max(120,map.getContainer().clientHeight-150)+'px');
  popup.setDOMContent(content).setLngLat([row.place.position.lng,row.place.position.lat]).addTo(map);
@@ -81,7 +89,7 @@ function render(){
  visible=filterPlaces([...publicRows,...($('#show-candidates').checked?candidates:[])],options);
  $('#map-results').innerHTML=visible.map(row=>{
   let summary=row.candidate?t('待匹配'):t('{count} 条关联',{count:row.associations.length});
-  if(options.query.trim()&&row.associations.length){const labels=[...new Set(row.associations.map(a=>citation(a.work,a.entry)))];summary=labels[0]+(row.associations.length>1?' · '+t('{count} 张',{count:row.associations.length}):'');}
+  if(options.query.trim()&&row.associations.length){const labels=[...new Set(row.associations.map(a=>citation(a.work,a.entry)))];const images=imageSummary(row);summary=labels[0]+(images&&row.associations.length>1?' · '+images:'');}
   return '<button type="button" class="map-result" data-place="'+esc(row.place.id)+'" aria-pressed="'+String(selectedId===row.place.id)+'"><span>'+esc(name(row))+'</span><small'+(options.query.trim()?' class="search-reference"':'')+'>'+esc(summary)+'</small></button>';
  }).join('')||'<p class="map-empty">'+(options.query.trim()?t('无匹配地点'):t('暂无地点'))+'</p>';
  $('#map-count').textContent=t('{count} 处',{count:visible.length});
@@ -121,7 +129,8 @@ async function init(){
 }
 $('#map-results').addEventListener('click',e=>{const b=e.target.closest('[data-place]');if(b)select(b.dataset.place);});
 $('#source-options').addEventListener('click',()=>menu(false));
-$('#map-source').addEventListener('change',e=>{source=e.target.value;render();});
+function fitVisible(){if(!map||!visible.length)return;const view=initialMapView(visible);if(view.bounds)map.fitBounds(view.bounds,{...view.fitBoundsOptions,duration:0});else map.easeTo({...view,duration:0});}
+$('#map-source').addEventListener('change',e=>{source=e.target.value;render();fitVisible();});
 $('#source-toggle').addEventListener('click',()=>{if(hoverOpened){hoverOpened=false;menu(true);}else menu($('#source-dropdown').hidden);});
 $('#source-menu').addEventListener('mouseenter',()=>{if(matchMedia('(min-width: 601px) and (hover:hover)').matches){menu(true);hoverOpened=true;}});
 $('#source-menu').addEventListener('mouseleave',()=>{if(!$('#source-menu').contains(document.activeElement))menu(false);});
@@ -129,7 +138,8 @@ $('#source-toggle').addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.pre
 $('#source-menu').addEventListener('keydown',e=>{if(e.key==='Escape'){menu(false);$('#source-toggle').focus();}});
 $('#source-menu').addEventListener('focusout',e=>{if(!$('#source-menu').contains(e.relatedTarget))menu(false);});
 document.addEventListener('click',e=>{if(!$('#source-menu').contains(e.target))menu(false);});
-for(const id of ['#map-region','#show-candidates'])$(id).addEventListener('change',render);
+$('#map-region').addEventListener('change',()=>{render();fitVisible();});
+$('#show-candidates').addEventListener('change',render);
 $('#map-search').addEventListener('input',render);
 $('#map-search').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&e.target.value.trim()&&visible.length){e.preventDefault();select(visible[0].place.id);}});$('#map-recenter').addEventListener('click',()=>{if(selectedId)select(selectedId);});
 $('#map-retry').addEventListener('click',()=>{clearTimeout(loadTimer);clearPendingPoints();pointsReady=false;map?.remove();map=null;marker=null;popup=null;init();});
