@@ -1,3 +1,4 @@
+import {t,region,applyTranslations} from './i18n.mjs';
 import {parseSearchQuery,matchesPage,matchesText} from './search.mjs';
 import {safeMapReturn,googleMapHref} from './photo-links.mjs';
 (() => {
@@ -17,7 +18,7 @@ try {
   saved = new Set(current ? JSON.parse(current).filter(v=>typeof v==="string") :
     JSON.parse(localStorage.getItem("pilgrim-amami-favorites-r01") || "[]").map(id=>"pilgrim:"+id));
 } catch {}
-let active=works[0], query="", savedOnly=false, currentId=null, trigger=null, detailOrder=[], toastTimer;
+let active=works[0], query="", savedOnly=false, currentId=null, trigger=null, detailOrder=[], toastTimer, homeMode=true;
 // Preserve saved IDs from the earlier category routes.
 saved=new Set([...saved].map(value=>value.replace(/^(mv|video):/,"")));
 const items=()=>[...(groups.get(active.id) || [])].sort((a,b)=>{
@@ -43,18 +44,18 @@ const pageRange = list => {
 const time=ms=>{const s=Math.floor(ms/1000);return (Math.floor(s/60))+":"+String(s%60).padStart(2,"0");};
 const citation=p=>{
   const r=p.reference;
-  if(r.type==="page") return "p."+pageRange(r.pages)+(r.figure!=null ? " · 图"+r.figure : "");
+  if(r.type==="page") return "p."+pageRange(r.pages)+(r.figure!=null ? " · "+t("图{number}",{number:r.figure}) : "");
   if(r.type==="timecode") return time(r.startMs)+(r.endMs!=null ? "–"+time(r.endMs) : "");
-  if(r.type==="image") return (r.number!=null ? "图"+r.number : "")+(r.side==="front" ? " 正面" : r.side==="back" ? " 背面" : "");
-  return "索引待补充";
+  if(r.type==="image") return (r.number!=null ? t("图{number}",{number:r.number}) : "")+(r.side==="front" ? " "+t("正面") : r.side==="back" ? " "+t("背面") : "");
+  return t("索引待补充");
 };
 // Card labels remain short; page-numbering provenance stays in the dataset.
 const label=p=>active.title+(p.reference.type==="page" ? " p."+pageRange(pages(p)) : " "+citation(p));
 const key=p=>active.id+":"+p.id;
 const displayPhoto=p=>p.photoIds.map(id=>photos.get(id)).find(photo=>photo?.permission==="website-approved" && (photo.src || photo.thumbnail));
-const cardImage=p=>{
+const cardImage=(p,index=0)=>{
   const reference=window.ReoNaReference.find(active.id,p.id);
-  if(reference)return window.ReoNaReference.markup(reference,label(p),true);
+  if(reference)return window.ReoNaReference.markup(reference,label(p),true,{priority:index<3});
   const photo=displayPhoto(p), src=photo?.thumbnail || photo?.src;
   return src ? '<img src="'+escapeHTML(src)+'" alt="'+escapeHTML(label(p))+'" width="640" height="500" loading="lazy">' : '';
 };
@@ -70,16 +71,16 @@ function syncSaved() {
   const count=(groups.get(active.id) || []).filter(p=>saved.has(key(p))).length;
   $("#saved-count").textContent=count; $("#saved-count").hidden=count===0;
   $("#saved-filter").setAttribute("aria-pressed",String(savedOnly));
-  $("#saved-filter").setAttribute("aria-label",savedOnly ? "显示全部" : "只看收藏");
+  $("#saved-filter").setAttribute("aria-label",savedOnly ? t("显示全部") : t("只看收藏"));
   $$("[data-save]").forEach(button=>{
     const p=(groups.get(active.id) || []).find(p=>p.id===button.dataset.save), yes=saved.has(key(p));
     button.setAttribute("aria-pressed",String(yes));
-    button.setAttribute("aria-label",(yes ? "取消收藏 " : "收藏 ")+label(p));
+    button.setAttribute("aria-label",t(yes ? "取消收藏 {label}" : "收藏 {label}",{label:label(p)}));
   });
   if (currentId) {
     const p=(groups.get(active.id) || []).find(p=>p.id===currentId), yes=saved.has(key(p));
     $("#detail-save").setAttribute("aria-pressed",String(yes));
-    $("#detail-save").setAttribute("aria-label",yes ? "取消收藏" : "收藏");
+    $("#detail-save").setAttribute("aria-label",yes ? t("取消收藏") : t("收藏"));
   }
 }
 function toggleSaved(id) {
@@ -88,15 +89,16 @@ function toggleSaved(id) {
   let stored=true;
   try { localStorage.setItem(STORAGE,JSON.stringify([...saved])); } catch { stored=false; }
   renderGallery();
-  notify(stored ? (yes ? "已取消" : "已收藏") : "仅本次有效");
+  notify(stored ? (yes ? t("已取消") : t("已收藏")) : t("仅本次有效"));
 }
 function renderGallery() {
+  if(homeMode){$("#photo-grid").replaceChildren();return;}
   const visible=filtered();
-  $("#photo-grid").innerHTML=visible.map(p=>'<article class="photo-card"><button class="photo-open" type="button" data-open="'+escapeHTML(p.id)+'" aria-label="查看 '+escapeHTML(label(p))+'"><span class="photo-image">'+cardImage(p)+'</span><span class="photo-caption"><span class="caption-open">'+escapeHTML(label(p))+'</span></span></button><button class="save-photo" type="button" data-save="'+escapeHTML(p.id)+'" aria-pressed="false" aria-label="收藏 '+escapeHTML(label(p))+'"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg></button></article>').join("");
+  $("#photo-grid").innerHTML=visible.map((p,index)=>'<article class="photo-card"><button class="photo-open" type="button" data-open="'+escapeHTML(p.id)+'" aria-label="'+escapeHTML(t("查看 {label}",{label:label(p)}))+'"><span class="photo-image">'+cardImage(p,index)+'</span><span class="photo-caption"><span class="caption-open">'+escapeHTML(label(p))+'</span></span></button><button class="save-photo" type="button" data-save="'+escapeHTML(p.id)+'" aria-pressed="false" aria-label="'+escapeHTML(t("收藏 {label}",{label:label(p)}))+'"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg></button></article>').join("");
   $("#empty-state").hidden=visible.length!==0;
-  $("#empty-message").textContent=!(groups.get(active.id) || []).length ? "暂无条目" : savedOnly && !query ? "暂无收藏" : "无结果";
+  $("#empty-message").textContent=!(groups.get(active.id) || []).length ? t("暂无条目") : savedOnly && !query ? t("暂无收藏") : t("无结果");
   $("#reset-filter").hidden=!(groups.get(active.id) || []).length || (!query && !savedOnly);
-  $("#result-status").textContent=visible.length+" 张";
+  $("#result-status").textContent=t("{count} 张",{count:visible.length});
   syncSaved();
 }
 const sourceMenu=$("#source-menu"), sourceToggle=$("#source-toggle"), dropdown=$("#source-dropdown");
@@ -108,56 +110,76 @@ function setMenu(open){
   if(!open) hoverOpened=false;
 }
 function renderNavigation(){
-  $("#source-options").innerHTML=window.ReoNaSourceMenu.links(works,active.id);
+  $("#source-options").innerHTML=window.ReoNaSourceMenu.links(works,homeMode?null:active.id);
 }
 function renderModule(scroll=false){
-  const previousId=active?.id;
+  const previousId=active?.id,previousHome=homeMode;
   let route;try{route=decodeURIComponent(location.hash.slice(1)).split("/");}catch{route=[];}
   const requested=route.length>1 ? route[1] : route[0];
+  homeMode=(!requested||requested==='top')&&!new URLSearchParams(location.search).has('entry');
   active=works.find(work=>work.id===requested) || works[0];
+  $("#home-view").hidden=!homeMode;$("#gallery-view").hidden=homeMode;
+  document.querySelector('.home-link').toggleAttribute('aria-current',homeMode);
+  if(homeMode)document.querySelector('.home-link').setAttribute('aria-current','page');
+  renderHome();
   if(!active)return;
   if($("#photo-dialog").open)$("#photo-dialog").close();
   currentId=null;query="";savedOnly=false;$("#page-search").value="";
   $("#module-title").textContent=active.title;
-  $("#module-region").textContent=active.region || "";
+  $("#module-region").textContent=region(active.region) || "";
   $("#module-region").hidden=!active.region;
   $("#gallery-tools").hidden=!items().length;
-  $("#page-search").placeholder="出处搜索";
-  $("#page-search").setAttribute("aria-label","出处搜索");
+  $("#page-search").placeholder=t("出处搜索");
+  $("#page-search").setAttribute("aria-label",t("出处搜索"));
   $("#content").dataset.work=active.id;
-  document.title=active.title+" | ReoNa · 圣地巡礼";
+  document.title=(homeMode?"":active.title+" | ")+"ReoNa · "+t("圣地巡礼");
   renderNavigation();renderGallery();setMenu(false);
-  const rights=active.rights;$("#work-rights").hidden=!rights;
-  $("#work-rights").innerHTML=rights ? '<span>图片版权归原权利人所有 · '+escapeHTML(rights.copyright)+'</span><a href="'+escapeHTML(rights.purchaseUrl)+'" target="_blank" rel="noopener noreferrer">购买正版，支持 ReoNa ↗</a>' : "";
-  if(scroll && previousId!==active.id)window.scrollTo({top:0,behavior:"instant"});
+  renderRights();
+  if(scroll && (previousId!==active.id||previousHome!==homeMode))window.scrollTo({top:0,behavior:"instant"});
+}
+function renderRights(){
+ const rights=active.rights;$("#work-rights").hidden=!rights;
+ $("#work-rights").innerHTML=rights?'<span>'+escapeHTML(t('图片版权归原权利人所有 · {copyright}',{copyright:rights.copyright}))+'</span><a href="'+escapeHTML(rights.purchaseUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(t('购买正版，支持 ReoNa ↗'))+'</a>':'';
+}
+function renderHome(){
+ if(!homeMode){$("#home-feed").replaceChildren();return;}
+ const kind={autobiography:'自传',photobook:'写真集',mv:'MV',video:'视频',magazine:'杂志',postcard:'特典',other:'其他'};
+ const populated=works.filter(w=>(groups.get(w.id)||[]).length);
+ $("#home-feed").innerHTML=populated.map(w=>{
+  const entries=groups.get(w.id),linked=new Set(entries.flatMap(e=>e.locations.map(l=>l.placeId)));
+  const pictures=entries.slice(0,3).map((entry,index)=>{const ref=window.ReoNaReference.find(w.id,entry.id);if(!ref)return '';const text=w.title+(entry.reference.type==='page'?' p.'+pageRange(entry.reference.pages):'');return window.ReoNaReference.markup(ref,text,true,{priority:index===0});}).join('');
+  return '<article class="home-post"><div class="home-post-meta">'+escapeHTML(t(kind[w.kind]))+(w.region?' · '+escapeHTML(region(w.region)):'')+'</div><h3><a href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(w.title)+'</a></h3><p class="home-post-count">'+escapeHTML(t('{count} 张',{count:entries.length}))+' · '+escapeHTML(t('{count} 处',{count:linked.size}))+'</p><a class="home-preview" href="#source/'+encodeURIComponent(w.id)+'" aria-label="'+escapeHTML(t('查看 {label}',{label:w.title}))+'">'+pictures+'</a><div class="home-post-links"><a class="text-link" href="#source/'+encodeURIComponent(w.id)+'">'+escapeHTML(t('查看全部'))+' →</a><a class="text-link" href="map.html?source='+encodeURIComponent(w.id)+'">'+escapeHTML(t('在地图中查看 ↗'))+'</a></div></article>';
+ }).join('');
+ $("#home-map-summary").textContent=t('{count} 处',{count:data.places.filter(p=>p.position).length});
+ $("#home-sources").innerHTML=works.map(w=>'<a href="#source/'+encodeURIComponent(w.id)+'"><span>'+escapeHTML(w.title)+'</span><small>'+escapeHTML(t(kind[w.kind]))+'</small></a>').join('');
 }
 function renderDetails(p){
   const original=active.sourceLinks.find(link=>link.role==="original");
-  let html='<section><h3>出处</h3><p>'+escapeHTML(active.title)+" "+escapeHTML(citation(p))+'</p>';
+  let html='<section><h3>'+escapeHTML(t("出处"))+'</h3><p>'+escapeHTML(active.title)+" "+escapeHTML(citation(p))+'</p>';
   if(active.edition)html+='<p class="detail-muted">'+escapeHTML(active.edition)+'</p>';
-  if(original)html+='<a href="'+escapeHTML(original.url)+'" target="_blank" rel="noopener noreferrer">原出处 ↗</a>';
-  html+='</section><section><h3>位置</h3>';
-  if(!p.locations.length)html+='<p class="detail-muted">位置待补充</p>';
+  if(original)html+='<a href="'+escapeHTML(original.url)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(t("原出处 ↗"))+'</a>';
+  html+='</section><section><h3>'+escapeHTML(t("位置"))+'</h3>';
+  if(!p.locations.length)html+='<p class="detail-muted">'+escapeHTML(t("位置待补充"))+'</p>';
   for(const location of p.locations){
     const place=places.get(location.placeId), point=location.viewpoint?.position || place.position;
     const map=googleMapHref(point) || place.mapUrl;
-    const coordinateLabel=point ? point.lat+", "+point.lng+(location.viewpoint ? " · 机位" : "") : null;
-    const placeLabel=place.name || coordinateLabel || "位置待补充";
+    const coordinateLabel=point ? point.lat+", "+point.lng+(location.viewpoint ? " · "+t("机位") : "") : null;
+    const placeLabel=place.name || coordinateLabel || t("位置待补充");
     html+='<div class="detail-location"><p>'+escapeHTML(placeLabel)+'</p>';
     if(place.address)html+='<p class="detail-muted">'+escapeHTML(place.address)+'</p>';
-    const status=location.matchStatus==="confirmed" ? "" : location.matchStatus==="probable" ? "推定" : "待核实";
-    if(status || (point && point.precision!=="exact"))html+='<p class="detail-muted">'+[status,point?.precision==="approximate" ? "大致位置" : point?.precision==="area" ? "区域位置" : ""].filter(Boolean).join(" · ")+'</p>';
-    if(point && place.name)html+='<p class="detail-muted">'+point.lat+", "+point.lng+(location.viewpoint ? " · 机位" : "")+'</p>';
-    if(point)html+='<div class="map-links"><a href="map.html?place='+encodeURIComponent(place.id)+'">在地图中查看 ↗</a><a href="'+escapeHTML(map)+'" target="_blank" rel="noopener noreferrer">Google 地图 ↗</a></div>';
-    else if(map)html+='<div class="map-links"><a href="'+escapeHTML(map)+'" target="_blank" rel="noopener noreferrer">地图 ↗</a></div>';
-    else html+='<p class="detail-muted">地图位置待补充</p>';
+    const status=location.matchStatus==="confirmed" ? "" : location.matchStatus==="probable" ? t("推定") : t("待核实");
+    if(status || (point && point.precision!=="exact"))html+='<p class="detail-muted">'+[status,point?.precision==="approximate" ? t("大致位置") : point?.precision==="area" ? t("区域位置") : ""].filter(Boolean).join(" · ")+'</p>';
+    if(point && place.name)html+='<p class="detail-muted">'+point.lat+", "+point.lng+(location.viewpoint ? " · "+t("机位") : "")+'</p>';
+    if(point)html+='<div class="map-links"><a href="map.html?place='+encodeURIComponent(place.id)+'">'+escapeHTML(t("在地图中查看 ↗"))+'</a><a href="'+escapeHTML(map)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(t("Google 地图 ↗"))+'</a></div>';
+    else if(map)html+='<div class="map-links"><a href="'+escapeHTML(map)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(t("地图 ↗"))+'</a></div>';
+    else html+='<p class="detail-muted">'+escapeHTML(t("地图位置待补充"))+'</p>';
     if(location.visitNote)html+='<p>'+escapeHTML(location.visitNote)+'</p>';
     html+='</div>';
   }
   const photo=displayPhoto(p);
   html+='</section>';
-  if(active.rights)html+='<section><h3>版权</h3><p>'+escapeHTML(active.rights.copyright)+'</p><a href="'+escapeHTML(active.rights.purchaseUrl)+'" target="_blank" rel="noopener noreferrer">购买正版，支持 ReoNa ↗</a></section>';
-  if(photo?.credit)html+='<section><h3>摄影</h3><p>'+escapeHTML(photo.credit)+'</p></section>';
+  if(active.rights)html+='<section><h3>'+escapeHTML(t("版权"))+'</h3><p>'+escapeHTML(active.rights.copyright)+'</p><a href="'+escapeHTML(active.rights.purchaseUrl)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(t("购买正版，支持 ReoNa ↗"))+'</a></section>';
+  if(photo?.credit)html+='<section><h3>'+escapeHTML(t("摄影"))+'</h3><p>'+escapeHTML(photo.credit)+'</p></section>';
   $("#detail-meta").innerHTML=html;
 }
 sourceMenu.addEventListener("mouseenter",()=>{
@@ -233,6 +255,12 @@ $("#saved-filter").addEventListener("click",()=>{savedOnly=!savedOnly;renderGall
 $("#reset-filter").addEventListener("click",()=>{savedOnly=false;query="";$("#page-search").value="";renderGallery();});
 document.querySelector(".skip-link").addEventListener("click",event=>{event.preventDefault();$("#content").focus({preventScroll:true});$("#content").scrollIntoView({block:"start",behavior:"instant"});});
 window.addEventListener("hashchange",()=>renderModule(true));
+window.addEventListener('reona-language-change',()=>{
+ applyTranslations();renderNavigation();renderHome();renderRights();renderGallery();
+ $("#module-region").textContent=region(active.region)||'';
+ document.title=(homeMode?'':active.title+' | ')+'ReoNa · '+t('圣地巡礼');
+ if(currentId)showDetail(currentId);
+});
 renderModule();
 const requestedEntry=new URLSearchParams(location.search).get("entry");
 if(requestedEntry){detailOrder=items().map(p=>p.id);showDetail(requestedEntry);}

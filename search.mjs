@@ -3,7 +3,7 @@ export const normalizeQuery=value=>String(value??'').normalize('NFKC').toLowerCa
 const compact=value=>normalizeQuery(value).replace(/[\p{P}\p{S}\s]+/gu,'');
 export function parseSearchQuery(value){
  const raw=normalizeQuery(value);if(!raw)return {type:'empty',raw};
- const page=raw.replace(/\s+/g,'').match(/^(?:pilgrim|pilg)?(?:p(?:age)?[.:]?|第)?([+-]?\d+)(?:页)?$/);
+ const page=raw.replace(/\s+/g,'').match(/^(?:pilgrim|pilg)?(?:p(?:age)?[.:]?|第)?([+-]?\d+)(?:页|頁|ページ)?$/);
  if(page)return {type:'page',raw,page:Number.isSafeInteger(Number(page[1]))?Number(page[1]):-1};
  return {type:'text',raw,terms:raw.split(/\s+/).map(compact).filter(Boolean)};
 }

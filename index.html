@@ -14,37 +14,40 @@
 <script src="app.js" type="module"></script>
 </head>
 <body>
-<a class="skip-link" href="#content">跳至内容</a>
-<header class="masthead" id="top">
-  <h1 class="sr-only">ReoNa 聖地巡礼</h1>
-  <div class="brand-composition" aria-hidden="true">
+<a class="skip-link" href="#content"><span data-i18n="跳至内容">跳至内容</span></a>
+<header class="masthead" id="top"><div class="language-switch" role="group" aria-label="语言" data-i18n-aria-label="语言"><button type="button" data-language="zh" aria-pressed="true" lang="zh-CN">中文</button><button type="button" data-language="en" aria-pressed="false" lang="en">EN</button><button type="button" data-language="ja" aria-pressed="false" lang="ja">日本語</button></div>
+  <h1 class="sr-only">ReoNa <span data-i18n="圣地巡礼">聖地巡礼</span></h1>
+  <a class="brand-home-link" href="index.html" aria-label="首页" data-i18n-aria-label="首页"><div class="brand-composition" aria-hidden="true">
     <span class="brand-wordmark brand-text">ReoNa</span>
     <span class="brand-subtitle brand-text">聖地巡礼</span>
     <div class="brand-decoration" id="brand-decoration"></div>
-  </div>
+  </div></a>
 </header>
-<nav class="source-nav" aria-label="主导航">
-  <div class="source-nav-inner"><div class="source-menu" id="source-menu">
-    <button class="source-toggle" id="source-toggle" type="button" aria-expanded="false" aria-controls="source-dropdown">出处<svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg></button>
+<nav class="source-nav" aria-label="主导航" data-i18n-aria-label="主导航">
+  <div class="source-nav-inner"><a class="nav-link home-link" href="index.html" data-i18n="首页">首页</a><div class="source-menu" id="source-menu">
+    <button class="source-toggle" id="source-toggle" type="button" aria-expanded="false" aria-controls="source-dropdown"><span data-i18n="出处">出处</span><svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg></button>
     <div class="source-dropdown" id="source-dropdown" hidden><div class="source-options" id="source-options"></div></div>
-  </div><a class="nav-link" href="map.html">地图</a></div>
+  </div><a class="nav-link" href="map.html" data-i18n="地图">地图</a></div>
 </nav>
 <main class="page-width" id="content" tabindex="-1">
-  <div class="module-heading"><div class="module-title"><h2 id="module-title">Pilgrim</h2><span id="module-region">奄美</span></div><div class="tools" id="gallery-tools"><label class="search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.2"/></svg><input id="page-search" type="search" placeholder="出处搜索" aria-label="出处搜索"></label><button class="saved-filter" id="saved-filter" type="button" aria-label="只看收藏" aria-pressed="false"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg><span id="saved-count" hidden></span></button></div></div>
+<section id="home-view" class="home-layout"><section class="home-journal" aria-labelledby="home-title"><h2 class="section-title" id="home-title" data-i18n="最近收录">最近收录</h2><div id="home-feed"></div></section><aside class="home-aside"><section><h2 class="section-title" data-i18n="巡礼地图">巡礼地图</h2><p id="home-map-summary" class="home-map-summary"></p><a class="text-link" href="map.html" data-i18n="在地图中查看 ↗">在地图中查看 ↗</a></section><section><h2 class="section-title" data-i18n="收录出处">收录出处</h2><div id="home-sources" class="home-sources"></div></section></aside></section>
+<section id="gallery-view" hidden>
+  <div class="module-heading"><div class="module-title"><h2 id="module-title">Pilgrim</h2><span id="module-region">奄美</span></div><div class="tools" id="gallery-tools"><label class="search"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.2"/></svg><input id="page-search" type="search" placeholder="出处搜索" data-i18n-placeholder="出处搜索" aria-label="出处搜索" data-i18n-aria-label="出处搜索"></label><button class="saved-filter" id="saved-filter" type="button" aria-label="只看收藏" data-i18n-aria-label="只看收藏" aria-pressed="false"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg><span id="saved-count" hidden></span></button></div></div>
   <div class="photo-grid" id="photo-grid"></div>
-  <div class="empty-state" id="empty-state" hidden><p id="empty-message">暂无条目</p><button class="reset-button" id="reset-filter" type="button" hidden>重置</button></div>
+  <div class="empty-state" id="empty-state" hidden><p id="empty-message">暂无条目</p><button class="reset-button" id="reset-filter" type="button" hidden><span data-i18n="重置">重置</span></button></div>
   <div class="work-rights" id="work-rights" hidden></div>
   <span id="result-status" class="sr-only" aria-live="polite"></span>
+</section>
 </main>
-<footer class="site-footer"><span>ReoNa · 非官方</span><a href="#top" id="back-top" aria-label="返回顶部"><span aria-hidden="true">↑</span></a></footer>
+<footer class="site-footer"><span data-i18n="ReoNa · 非官方">ReoNa · 非官方</span><a href="#top" id="back-top" aria-label="返回顶部" data-i18n-aria-label="返回顶部"><span aria-hidden="true">↑</span></a></footer>
 <dialog class="photo-dialog" id="photo-dialog" aria-labelledby="detail-title">
-  <a class="detail-back" id="detail-back" href="map.html" hidden>← 返回地图</a>
-  <button class="close-button" id="close-detail" type="button" aria-label="关闭">×</button>
+  <a class="detail-back" id="detail-back" href="map.html" hidden><span data-i18n="← 返回地图">← 返回地图</span></a>
+  <button class="close-button" id="close-detail" type="button" aria-label="关闭" data-i18n-aria-label="关闭">×</button>
   <div class="detail-image-wrap"><img id="detail-image" alt="" hidden><div id="detail-reference" hidden></div></div>
-  <div class="detail-bar"><h2 id="detail-title"></h2><div class="detail-actions"><button id="previous-photo" type="button" aria-label="上一张">←</button><button id="next-photo" type="button" aria-label="下一张">→</button><button class="detail-save" id="detail-save" type="button" aria-label="收藏" aria-pressed="false"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg></button></div></div>
+  <div class="detail-bar"><h2 id="detail-title"></h2><div class="detail-actions"><button id="previous-photo" type="button" aria-label="上一张" data-i18n-aria-label="上一张">←</button><button id="next-photo" type="button" aria-label="下一张" data-i18n-aria-label="下一张">→</button><button class="detail-save" id="detail-save" type="button" aria-label="收藏" data-i18n-aria-label="收藏" aria-pressed="false"><svg viewBox="0 0 20 24" fill="none" aria-hidden="true"><path d="M4 3h12v18l-6-4-6 4V3Z" stroke="currentColor" stroke-width="1.2"/></svg></button></div></div>
   <div class="detail-meta" id="detail-meta"></div>
 </dialog>
 <div class="toast" id="toast" role="status" hidden></div>
-<noscript><p class="noscript">请启用 JavaScript。</p></noscript>
+<noscript><p class="noscript"><span data-i18n="请启用 JavaScript。">请启用 JavaScript。</span></p></noscript>
 </body>
 </html>

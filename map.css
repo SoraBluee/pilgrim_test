@@ -25,3 +25,8 @@
 .brand-wordmark:not(.brand-text){max-width:100%;margin-inline:auto}.map-page .site-footer .footer-gallery{font-size:17px}
 
 .map-result small.search-reference{max-width:48%;white-space:normal;text-align:right;line-height:1.5;overflow-wrap:anywhere}
+
+/* Clickable places remain available while provider metadata and basemap tiles load. */
+.map-loading-point{width:18px;height:18px;padding:0;border-radius:50%;border:2px solid white;background:#98665a;box-shadow:0 1px 4px #301c1a42;cursor:pointer;z-index:1}.paw-map-marker{z-index:2}.map-feedback{max-width:calc(100% - 78px);line-height:1.6;pointer-events:none}.map-toolbar select{max-width:190px}
+
+@media(max-width:600px){.map-page .masthead{height:202px;padding-top:30px}}
