@@ -108,6 +108,8 @@ export const messages = {
     "铫子": "Choshi",
     "足利": "Ashikaga",
     "磐城": "Iwaki",
+    "美浦": "Miho",
+    "笠间": "Kasama",
     "横滨": "Yokohama",
     "福岛": "Fukushima",
     "市原": "Ichihara",
@@ -216,6 +218,8 @@ export const messages = {
     "铫子": "銚子",
     "足利": "足利",
     "磐城": "いわき",
+    "美浦": "美浦",
+    "笠间": "笠間",
     "横滨": "横浜",
     "福岛": "福島",
     "市原": "市原",
@@ -228,6 +232,8 @@ export const messages = {
     "伦敦": "ロンドン"
   }
 };
+Object.assign(messages.en,{'推荐':'Picks','ReoNa 的推荐':"ReoNa’s picks",'漫画':'Manga','小说':'Novels','食物':'Food','分类':'Categories','← 返回推荐':'← Back to picks','推文出处':'Original posts','官方图片':'Publisher image','原推文图片':'Image from original post','第1巻':'Vol. 1'});
+Object.assign(messages.ja,{'推荐':'おすすめ','ReoNa 的推荐':'ReoNaのおすすめ','漫画':'漫画','小说':'小説','食物':'食べ物','分类':'カテゴリ','← 返回推荐':'← おすすめに戻る','推文出处':'投稿元','官方图片':'出版社の画像','原推文图片':'元の投稿の画像','第1巻':'第1巻'});
 export const languages=['zh','en','ja'];
 export const normalizeLanguage=value=>languages.includes(value)?value:'zh';
 export function translate(key,language='zh',values={}){

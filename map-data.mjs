@@ -1,6 +1,6 @@
 import {parseSearchQuery,matchesPage,matchesText} from './search.mjs';
 export const positionLabel=p=>Number(p.lat.toFixed(6))+", "+Number(p.lng.toFixed(6));
-export const regions=[{"id": "amami", "label": "奄美"}, {"id": "tokyo", "label": "东京"}, {"id": "chiba", "label": "千叶"}, {"id": "choshi", "label": "铫子"}, {"id": "ashikaga", "label": "足利"}, {"id": "iwaki", "label": "磐城"}, {"id": "yokohama", "label": "横滨"}, {"id": "fukushima", "label": "福岛"}, {"id": "ichihara", "label": "市原"}, {"id": "naha", "label": "那霸"}, {"id": "yachimata", "label": "八街"}, {"id": "sapporo", "label": "札幌"}, {"id": "higashiizu", "label": "东伊豆"}, {"id": "osaka", "label": "大阪"}, {"id": "heidelberg", "label": "海德堡"}, {"id": "london", "label": "伦敦"}];
+export const regions=[{"id": "amami", "label": "奄美"}, {"id": "tokyo", "label": "东京"}, {"id": "chiba", "label": "千叶"}, {"id": "choshi", "label": "铫子"}, {"id": "ashikaga", "label": "足利"}, {"id": "iwaki", "label": "磐城"}, {"id": "miho", "label": "美浦"}, {"id": "kasama", "label": "笠间"}, {"id": "yokohama", "label": "横滨"}, {"id": "fukushima", "label": "福岛"}, {"id": "ichihara", "label": "市原"}, {"id": "naha", "label": "那霸"}, {"id": "yachimata", "label": "八街"}, {"id": "sapporo", "label": "札幌"}, {"id": "higashiizu", "label": "东伊豆"}, {"id": "osaka", "label": "大阪"}, {"id": "heidelberg", "label": "海德堡"}, {"id": "london", "label": "伦敦"}];
 export function placeRegionId(place){
  const known=regions.find(r=>r.label===place.region);if(known)return known.id;
  // Legacy local Amami candidates have coordinates but no region metadata.

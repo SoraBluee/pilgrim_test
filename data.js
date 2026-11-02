@@ -290,6 +290,40 @@ window.REONA_DATA = {
       "region": "东京",
       "edition": null,
       "sourceLinks": []
+    },
+    {
+      "id": "amore",
+      "title": "Amore",
+      "kind": "mv",
+      "region": "美浦",
+      "edition": null,
+      "sourceLinks": [
+        {
+          "role": "announcement",
+          "url": "https://www.sonymusic.co.jp/artist/ReoNa/info/584888"
+        }
+      ]
+    },
+    {
+      "id": "nai-nai",
+      "title": "ないない",
+      "kind": "mv",
+      "region": "笠间",
+      "edition": null,
+      "sourceLinks": [
+        {
+          "role": "announcement",
+          "url": "https://www.sonymusic.co.jp/artist/ReoNa/info/528966"
+        }
+      ]
+    },
+    {
+      "id": "reowan-2017",
+      "title": "れおわん！-れおぺこone-man-",
+      "kind": "other",
+      "region": "东京",
+      "edition": "2017-03-12",
+      "sourceLinks": []
     }
   ],
   "places": [
@@ -1375,8 +1409,10 @@ window.REONA_DATA = {
     },
     {
       "id": "map-6ac47f9d24e23f69",
-      "name": "結い々の唄　ロケ地",
-      "aliases": [],
+      "name": "「結い々の唄」　ロケ地",
+      "aliases": [
+        "結い々の唄　ロケ地"
+      ],
       "countryCode": "JP",
       "region": "奄美",
       "address": null,
@@ -1397,6 +1433,56 @@ window.REONA_DATA = {
       "position": {
         "lat": 35.5760969,
         "lng": 139.74672,
+        "precision": "approximate"
+      },
+      "mapUrl": null
+    },
+    {
+      "id": "map-a6cb6fedec9191a2",
+      "name": "「Amore」ロケ地",
+      "aliases": [
+        "鹿島海軍航空隊自力発電所跡"
+      ],
+      "countryCode": "JP",
+      "region": "美浦",
+      "address": null,
+      "position": {
+        "lat": 36.005466,
+        "lng": 140.373842,
+        "precision": "approximate"
+      },
+      "mapUrl": null
+    },
+    {
+      "id": "map-9983d5a42ee3d536",
+      "name": "「ないない」ロケ地",
+      "aliases": [
+        "旧笠間市立東中学校"
+      ],
+      "countryCode": "JP",
+      "region": "笠间",
+      "address": null,
+      "position": {
+        "lat": 36.4153337,
+        "lng": 140.3070402,
+        "precision": "approximate"
+      },
+      "mapUrl": null
+    },
+    {
+      "id": "map-1ec7cc02b7a09664",
+      "name": "「れおわん！-れおぺこone-man-」",
+      "aliases": [
+        "TOGI BAR",
+        "TOGIBAR",
+        "第一次Live"
+      ],
+      "countryCode": "JP",
+      "region": "东京",
+      "address": "東京都渋谷区本町4-19-1 B1",
+      "position": {
+        "lat": 35.6883255,
+        "lng": 139.6800707,
         "precision": "approximate"
       },
       "mapUrl": null
@@ -2609,6 +2695,66 @@ window.REONA_DATA = {
       "entryId": "image-93913d3bc4527cadd112",
       "src": "assets/processed/life-is-beautiful/3b6d9b557c0a44d9ed18.webp",
       "thumbnail": "assets/processed/life-is-beautiful/3b6d9b557c0a44d9ed18-thumb.webp",
+      "copyright": "Original work rights holders",
+      "permission": "website-approved",
+      "processing": {
+        "profileId": "reference-web-v1",
+        "preset": "resize-only",
+        "maxEdge": 1600,
+        "thumbnailMaxEdge": 640,
+        "format": "webp",
+        "quality": 90,
+        "thumbnailQuality": 86,
+        "width": 1600,
+        "height": 900
+      }
+    },
+    {
+      "id": "reference-573cf45b4a281fe2a679",
+      "workId": "reowan-2017",
+      "entryId": "map-ref-1ec7cc02b7a09664",
+      "src": "assets/processed/reowan-2017/829e488533aec317ce25.webp",
+      "thumbnail": "assets/processed/reowan-2017/829e488533aec317ce25-thumb.webp",
+      "copyright": "Original work rights holders",
+      "permission": "website-approved",
+      "processing": {
+        "profileId": "reference-web-v1",
+        "preset": "resize-only",
+        "maxEdge": 1600,
+        "thumbnailMaxEdge": 640,
+        "format": "webp",
+        "quality": 90,
+        "thumbnailQuality": 86,
+        "width": 1309,
+        "height": 806
+      }
+    },
+    {
+      "id": "reference-9eb19f1e5b99b1f0d6a1",
+      "workId": "amore",
+      "entryId": "map-ref-a6cb6fedec9191a2",
+      "src": "assets/processed/amore/386fbb665328aaae1652.webp",
+      "thumbnail": "assets/processed/amore/386fbb665328aaae1652-thumb.webp",
+      "copyright": "Original work rights holders",
+      "permission": "website-approved",
+      "processing": {
+        "profileId": "reference-web-v1",
+        "preset": "resize-only",
+        "maxEdge": 1600,
+        "thumbnailMaxEdge": 640,
+        "format": "webp",
+        "quality": 90,
+        "thumbnailQuality": 86,
+        "width": 1600,
+        "height": 900
+      }
+    },
+    {
+      "id": "reference-5d2a650faa5332607438",
+      "workId": "amore",
+      "entryId": "image-5d2a650faa5332607438",
+      "src": "assets/processed/amore/21528b7ca382d162dcec.webp",
+      "thumbnail": "assets/processed/amore/21528b7ca382d162dcec-thumb.webp",
       "copyright": "Original work rights holders",
       "permission": "website-approved",
       "processing": {
@@ -4635,6 +4781,79 @@ window.REONA_DATA = {
           "locations": [
             {
               "placeId": "map-d5d0d64aff965ce7",
+              "matchStatus": "unverified",
+              "viewpoint": null
+            }
+          ],
+          "photoIds": []
+        }
+      ]
+    },
+    {
+      "workId": "amore",
+      "items": [
+        {
+          "id": "map-ref-a6cb6fedec9191a2",
+          "reference": {
+            "type": "unresolved"
+          },
+          "locations": [
+            {
+              "placeId": "map-a6cb6fedec9191a2",
+              "matchStatus": "unverified",
+              "viewpoint": null
+            }
+          ],
+          "photoIds": []
+        },
+        {
+          "id": "image-5d2a650faa5332607438",
+          "reference": {
+            "type": "unresolved"
+          },
+          "locations": [
+            {
+              "placeId": "map-a6cb6fedec9191a2",
+              "matchStatus": "unverified",
+              "viewpoint": null
+            }
+          ],
+          "photoIds": []
+        }
+      ]
+    },
+    {
+      "workId": "nai-nai",
+      "items": [
+        {
+          "id": "map-ref-9983d5a42ee3d536",
+          "reference": {
+            "type": "unresolved"
+          },
+          "locations": [
+            {
+              "placeId": "map-9983d5a42ee3d536",
+              "matchStatus": "unverified",
+              "viewpoint": null
+            }
+          ],
+          "photoIds": []
+        }
+      ]
+    },
+    {
+      "workId": "reowan-2017",
+      "items": [
+        {
+          "id": "map-ref-1ec7cc02b7a09664",
+          "reference": {
+            "type": "image",
+            "number": null,
+            "side": null
+          },
+          "locations": [
+            {
+              "placeId": "map-1ec7cc02b7a09664",
               "matchStatus": "unverified",
               "viewpoint": null
             }

@@ -157,3 +157,5 @@ function translateMap(){
 }
 window.addEventListener('reona-language-change',()=>{render();translateMap();});
 render();translateMap();init();
+
+window.addEventListener('reona-nav-menu-open',event=>{if(event.detail.id!=='source-dropdown')menu(false);});

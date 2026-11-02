@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="ReoNa 圣地巡礼">
+<title>ReoNa · 圣地巡礼</title>
+<link rel="icon" href="data:,">
+<link rel="preload" href="fonts/pilgrimage-hand-jp.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="fonts/pilgrimage-hand-sc.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="style.css">
+<script src="data.js" defer></script>
+<script src="preview-data.js" defer></script><script src="branding.js" defer></script><script src="source-menu.js" defer></script><script src="recommendation-categories.js" defer></script><script src="recommendation-nav.mjs" type="module"></script>
+<script src="recommendations-data.js" defer></script><link rel="stylesheet" href="recommendations.css">
+<script src="recommendations-page.mjs" type="module"></script>
+</head>
+<body class="recommendations-page">
+<a class="skip-link" href="#content"><span data-i18n="跳至内容">跳至内容</span></a>
+<header class="masthead" id="top"><div class="language-switch" role="group" aria-label="语言" data-i18n-aria-label="语言"><button type="button" data-language="zh" aria-pressed="true" lang="zh-CN">中文</button><button type="button" data-language="en" aria-pressed="false" lang="en">EN</button><button type="button" data-language="ja" aria-pressed="false" lang="ja">日本語</button></div>
+  <h1 class="sr-only">ReoNa <span data-i18n="圣地巡礼">聖地巡礼</span></h1>
+  <a class="brand-home-link" href="index.html" aria-label="首页" data-i18n-aria-label="首页"><div class="brand-composition" aria-hidden="true">
+    <span class="brand-wordmark brand-text">ReoNa</span>
+    <span class="brand-subtitle brand-text">聖地巡礼</span>
+    <div class="brand-decoration" id="brand-decoration"></div>
+  </div></a>
+</header>
+<nav class="source-nav" aria-label="主导航" data-i18n-aria-label="主导航">
+  <div class="source-nav-inner"><a class="nav-link home-link" href="index.html" data-i18n="首页">首页</a><div class="source-menu" id="source-menu">
+    <button class="source-toggle" id="source-toggle" type="button" aria-expanded="false" aria-controls="source-dropdown"><span data-i18n="出处">出处</span><svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg></button>
+    <div class="source-dropdown" id="source-dropdown" hidden><div class="source-options" id="source-options"></div></div>
+  </div><a class="nav-link" href="map.html" data-i18n="地图">地图</a><div class="source-menu" id="recommendation-menu"><button class="source-toggle" id="recommendation-toggle" type="button" aria-expanded="false" aria-controls="recommendation-dropdown"><span data-i18n="推荐">推荐</span><svg viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1 5 5 5-5"/></svg></button><div class="source-dropdown" id="recommendation-dropdown" hidden><div class="source-options" id="recommendation-options"></div></div></div></div>
+</nav>
+<main class="page-width recommendations-main" id="content" tabindex="-1">
+<h2 class="section-title" data-i18n="ReoNa 的推荐">ReoNa 的推荐</h2>
+<nav class="recommendation-tabs" id="recommendation-tabs" aria-label="分类" data-i18n-aria-label="分类"></nav>
+<div class="recommendation-grid" id="recommendation-grid"></div>
+</main>
+<footer class="site-footer"><span data-i18n="ReoNa · 非官方">ReoNa · 非官方</span><a href="#top" id="back-top" aria-label="返回顶部" data-i18n-aria-label="返回顶部">↑</a></footer>
+<dialog class="recommendation-dialog" id="recommendation-dialog" aria-labelledby="recommendation-title">
+<div class="recommendation-dialog-bar"><button id="recommendation-back" type="button" data-i18n="← 返回推荐">← 返回推荐</button><button class="recommendation-close" id="recommendation-close" type="button" aria-label="关闭" data-i18n-aria-label="关闭">×</button></div>
+<div id="recommendation-detail"></div>
+</dialog>
+<noscript><p class="noscript">请启用 JavaScript。</p></noscript>
+</body></html>

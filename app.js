@@ -281,4 +281,5 @@ window.addEventListener('reona-language-change',()=>{
 renderModule();
 const requestedEntry=new URLSearchParams(location.search).get("entry");
 if(requestedEntry){detailMapReturn=safeMapReturn(new URLSearchParams(location.search).get("return"),location.href);detailOrder=items().map(p=>p.id);showDetail(requestedEntry);}
+window.addEventListener('reona-nav-menu-open',event=>{if(event.detail.id!=='source-dropdown')setMenu(false);});
 })();

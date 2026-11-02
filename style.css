@@ -85,3 +85,9 @@ body{font-synthesis:none}button,input,select,textarea{font-family:var(--hand)}
 /* Missing source images are intentional data placeholders, without remote image requests. */
 .image-placeholder{display:grid;place-items:center;width:100%;height:100%;min-height:100px;background:#f8f6f2;color:var(--muted);font-size:16px;letter-spacing:1px;text-align:center;padding:20px}.image-placeholder[hidden]{display:none}.home-preview[hidden]{display:none}.home-post h3{overflow-wrap:anywhere}.detail-image-wrap:has(#detail-placeholder:not([hidden])){display:block;height:240px;min-height:160px;padding:40px 50px 0}#detail-placeholder{height:100%}
 @media(max-width:600px){.detail-image-wrap:has(#detail-placeholder:not([hidden])){height:220px;padding:50px 12px 0}.module-title h2{overflow-wrap:anywhere}}
+
+/* Four shared entry points keep dropdowns inside the viewport. */
+#recommendation-dropdown{width:270px}#recommendation-toggle[aria-current=page]{color:var(--accent)}
+@media(max-width:600px){.source-nav-inner{width:calc(100% - 24px)}.source-nav-inner>.nav-link,.source-nav-inner>.source-menu{flex:1;min-width:0}.source-nav-inner>.nav-link{padding-inline:4px;font-size:16px;letter-spacing:0}.source-nav-inner .source-toggle{width:100%;min-width:0;padding:0 5px;gap:5px;font-size:16px;letter-spacing:0}.source-toggle svg{flex-shrink:0}#recommendation-dropdown{width:100%}.source-dropdown{padding-inline:22px}html[lang=ja] .source-nav-inner>.source-menu:last-child{flex:1.35}}
+
+@media(max-width:600px){.source-nav-inner{display:grid;grid-template-columns:1fr 1.2fr .8fr 1.25fr}.source-nav-inner .source-toggle{white-space:nowrap}html[lang=ja] .source-nav-inner{grid-template-columns:1fr 1fr .8fr 1.5fr}}
